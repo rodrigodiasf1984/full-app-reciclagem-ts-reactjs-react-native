@@ -1,7 +1,8 @@
-import React,{useEffect, useState, ChangeEvent} from 'react';
-import {Link} from 'react-router-dom';
+import React,{useEffect, useState, ChangeEvent, FormEvent} from 'react';
+import {Link, useHistory} from 'react-router-dom';
 import {FiArrowLeft} from 'react-icons/fi';
 import {Map, TileLayer, Marker} from 'react-leaflet';
+import {LeafletMouseEvent, latLng} from 'leaflet';
 import logo from '../../assets/logo.svg';
 import api from '../../services/api';
 import axios from 'axios';
@@ -29,6 +30,27 @@ const CreatePoint = () => {
   const[cities, setCities]=useState<string[]>([]);
   const[selectedUF, setSelectedUF]=useState('0');
   const[selectedCity, setSelectedCity]=useState('0');
+  const[selectedPosition, setSelectedPosition]=useState<[number, number]>([0, 0]);
+  const[intialPosition, setInitialPosition]=useState<[number, number]>([0, 0]);
+  const[selectedItems, setSelectedItems]=useState<number[]>([]);
+  const[formData, setFormData]=useState({
+    name:'',
+    email:'',
+    whatsapp:'',
+  });
+
+  const history = useHistory();
+  //busca a position
+  useEffect(()=>{
+    navigator.geolocation.getCurrentPosition(position =>{
+      const {latitude, longitude}=position.coords;
+      console.log(position.coords);
+      setInitialPosition([
+        latitude, 
+        longitude,
+      ]);
+    });
+  },[]);
 
   //busca os item da api local
   useEffect(()=>{
@@ -69,9 +91,62 @@ const CreatePoint = () => {
     setSelectedCity(e.target.value);
   }
 
-  function handleInputChange(){
-    
+  function handleMapClick(e:LeafletMouseEvent){
+    setSelectedPosition([
+      e.latlng.lat,
+      e.latlng.lng,
+    ]);
   }
+
+  function handleInputChange(e:ChangeEvent<HTMLInputElement>){
+    const {name, value} = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    })
+  }
+
+  function handleSelectItem(id:number){
+    const alreadySelected = selectedItems.findIndex(item => item === id );
+    if(alreadySelected >= 0 ){
+      //si já foi selecionado e clicou novamente remove do array
+      const fielteredItems = selectedItems.filter(item => item !== id);
+      setSelectedItems(fielteredItems);
+    }else{
+      //senão estiver já sido selecionado adiciona
+      setSelectedItems([...selectedItems, id]);
+    }
+  }
+
+  async function handleSubmit(e:FormEvent){
+    e.preventDefault();
+    const{name, whatsapp, email}=formData;
+    const uf = selectedUF;
+    const city = selectedCity;
+    const [latitude, longitude] = selectedPosition;
+    const items = selectedItems;
+
+    const data = {
+      name, 
+      email,
+      whatsapp,
+      uf,
+      city,
+      latitude, 
+      longitude,
+      items
+    }
+    const response = await api.post('points', data);
+    console.log(response);
+    if(response.status===200){
+      alert('Ponto de coleta adicionado com sucesso');
+      history.push('/');
+    }else{
+      alert('Erro ao adicionar o ponto de coleta, verifique os dados digitados');
+    }
+
+  }
+
   return(
    <div id="page-create-point">
      <header>
@@ -81,7 +156,7 @@ const CreatePoint = () => {
          Voltar para home
        </Link>
      </header>
-     <form>
+     <form onSubmit={handleSubmit}>
        <h1>Cadastro do <br/> ponto de coleta </h1>
        <fieldset>
           <legend>
@@ -126,12 +201,12 @@ const CreatePoint = () => {
             <span>Selecione o endereço no mapa</span>
          </legend>
 
-          <Map center={[38.6560185, -9.0633101]} zoom={15}>
+          <Map center={intialPosition} zoom={15} onClick={handleMapClick}>
             <TileLayer
               attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={[38.6560185, -9.0633101]}/>
+            <Marker position={selectedPosition}/>
           </Map>
 
             <div className="field-group">
@@ -175,7 +250,11 @@ const CreatePoint = () => {
 
          <ul className="items-grid">
            {items.map(item =>( 
-            <li key={item.id}>
+            <li 
+              key={item.id} 
+              onClick={() => handleSelectItem(item.id)}
+              className={selectedItems.includes(item.id) ? 'selected' : ''}
+            >                
                 <img src={item.image_url} alt={item.title}/>
                 <span>{item.title}</span>
               </li>))}           
