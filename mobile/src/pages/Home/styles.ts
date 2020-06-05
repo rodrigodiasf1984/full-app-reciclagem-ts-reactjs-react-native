@@ -1,25 +1,28 @@
-import styled from 'styled-components';
+import styled from 'styled-components/native';
+import {ImageBackground, Text} from 'react-native';
+import {RectButton} from 'react-native-gesture-handler';
 
-export const Container = styled.View`
+export const Container = styled(ImageBackground)`
   flex: 1;
   padding: 32px;
 `;
 
 export const Main = styled.View`
+  margin-top: 255px;
   flex: 1;
-  justify-content: 'center';
+  justify-content: center;
 `;
 
-export const Title = styled.View`
-  color: '#322153';
+export const Title = styled.Text`
+  color: #322153;
   font-size: 32px;
-  font-family: 'Ubuntu_700Bold';
+  font-family: Ubuntu_700Bold;
   max-width: 260px;
   margin-top: 64px;
 `;
 
-export const Description = styled.View`
-  color: '#6C6C80';
+export const Description = styled.Text`
+  color: #6c6c80;
   font-size: 16px;
   margin-top: 16px;
   font-family: 'Roboto_400Regular';
@@ -33,36 +36,36 @@ export const Select = styled.View``;
 
 export const Input = styled.View`
   height: 60px;
-  background-color: '#FFF';
+  background-color: #fff;
   border-radius: 10px;
   margin-bottom: 8px;
   padding: 0px 24px 0px 24px;
   font-size: 16px;
 `;
 
-export const Button = styled.View`
-  background-color: '#34CB79';
+export const Button = styled(RectButton)`
+  background-color: #34cb79;
   height: 60px;
-  flex-direction: 'row';
+  flex-direction: row;
   border-radius: 10px;
-  overflow: 'hidden';
-  align-items: 'center';
-  margin-top: 8px;
+  overflow: hidden;
+  align-items: center;
+  margin: 8px 0px -25px 0px;
 `;
 
 export const ButtonIcon = styled.View`
   height: 60px;
   width: 60px;
-  background-color: 'rgba(0, 0, 0, 0.1)';
-  justify-content: 'center';
-  align-items: 'center';
+  background-color: rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  align-items: center;
 `;
 
-export const ButtonText = styled.View`
+export const ButtonText = styled(Text)`
   flex: 1;
-  justify-content: 'center';
-  text-align: 'center';
-  color: '#FFF';
+  justify-content: center;
+  text-align: center;
+  color: #fff;
   font-family: 'Roboto_500Medium';
-  font-size: 16px;
+  font-size: 20px;
 `;
