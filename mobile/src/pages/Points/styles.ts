@@ -1,6 +1,10 @@
 import styled from 'styled-components/native';
-import {TouchableOpacity} from 'react-native';
-import MapView from 'react-native-maps';
+import {TouchableOpacity, Image, SafeAreaView} from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
+
+export const ContainerPrincipal = styled(SafeAreaView)`
+  flex: 1;
+`;
 
 export const Container = styled.View`
   flex: 1;
@@ -36,7 +40,7 @@ export const Map = styled(MapView)`
   height: 100%;
 `;
 
-export const MapMarker = styled.View`
+export const MapMarker = styled(Marker)`
   width: 90px;
   height: 80px;
 `;
@@ -51,7 +55,7 @@ export const MapMarkerContainer = styled.View`
   align-items: center;
 `;
 
-export const MapMarkerImage = styled.Image`
+export const MapMarkerImage = styled(Image)`
   width: 90px;
   height: 45px;
 `;
@@ -89,6 +93,10 @@ export const Item = styled(TouchableOpacity)`
 export const SelectedItem = styled.View`
   border-color: #34cb79;
   border-width: 2px;
+  border-radius: 8px;
+  height: 125px;
+  width: 124px;
+  margin-right: 8px;
 `;
 
 export const ItemTitle = styled.Text`
