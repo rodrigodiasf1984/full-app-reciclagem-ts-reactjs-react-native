@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import Icon2 from 'react-native-vector-icons/FontAwesome5';
-import {useNavigation} from '@react-navigation/native';
-
+import {useNavigation, useRoute} from '@react-navigation/native';
+import api from '../../services/api';
+import {ActivityIndicator, Linking} from 'react-native';
 import {
   Container,
   ContainerIcon,
@@ -18,8 +19,38 @@ import {
   ContainerPrincipal,
 } from './styles';
 
+interface RouteParams {
+  point_id: number;
+}
+
+interface Data {
+  point: {
+    image: string;
+    name: string;
+    email: string;
+    whatsapp: string;
+    city: string;
+    uf: string;
+  };
+  items: {
+    title: string;
+  }[];
+}
 const Details = () => {
+  const [Data, setData] = useState<Data>({} as Data);
   const navigation = useNavigation();
+  const route = useRoute();
+  const routeParams = route.params as RouteParams;
+
+  useEffect(() => {
+    api.get(`points/${routeParams.point_id}`).then(response => {
+      setData(response.data);
+    });
+  }, [routeParams.point_id]);
+
+  if (!Data.point) {
+    return ActivityIndicator;
+  }
   return (
     <ContainerPrincipal>
       <Container>
@@ -31,23 +62,39 @@ const Details = () => {
         </ContainerIcon>
         <PointImage
           source={{
-            uri:
-              'https://images.unsplash.com/photo-1578916171728-46686eac8d58?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60',
+            uri: Data.point.image,
           }}
         />
-        <PointName>Mercado do seu Zé</PointName>
-        <PointItems>Lâmpadas, Papelão</PointItems>
+        <PointName>{Data.point.name}</PointName>
+        <PointItems>{Data.items.map(item => item.title).join(', ')}</PointItems>
         <Address>
           <AddressTitle>Endereço</AddressTitle>
-          <AddressContent>BH, MG</AddressContent>
+          <AddressContent>
+            {' '}
+            {Data.point.city}, {Data.point.uf}
+          </AddressContent>
         </Address>
       </Container>
       <Footer>
-        <Button onPress={() => {}}>
+        <Button
+          onPress={() =>
+            Linking.openURL(
+              `whatsapp://send?phone=${
+                Data.point.whatsapp
+              }&text=Tenho interesse em ajudar na coleta de resíduos`,
+            )
+          }>
           <Icon2 name="whatsapp" size={20} color="#FFF" />
           <ButtonText>WhatsApp</ButtonText>
         </Button>
-        <Button onPress={() => {}}>
+        <Button
+          onPress={() =>
+            Linking.openURL(
+              `mailto:${
+                Data.point.email
+              }?subject=Tenho interesse em ajudar na coleta de resíduos`,
+            )
+          }>
           <Icon name="mail" size={20} color="#FFF" />
           <ButtonText>E-mail</ButtonText>
         </Button>

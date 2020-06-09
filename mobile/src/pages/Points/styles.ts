@@ -30,6 +30,7 @@ export const Description = styled.Text`
 export const MapContainer = styled.View`
   flex: 1;
   width: 100%;
+  height: 100%;
   border-radius: 10px;
   overflow: hidden;
   margin-top: 16px;

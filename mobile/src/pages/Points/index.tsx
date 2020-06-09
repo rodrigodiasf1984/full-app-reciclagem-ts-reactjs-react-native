@@ -1,9 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import Icon from 'react-native-vector-icons/Feather';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {SvgUri} from 'react-native-svg';
-import {ScrollView} from 'react-native';
+import {ScrollView, Alert, PermissionsAndroid} from 'react-native';
 import api from '../../services/api';
+import Geolocation from '@react-native-community/geolocation';
+
 import {
   Container,
   ContainerIcon,
@@ -28,14 +30,93 @@ interface Item {
   image_url: string;
 }
 
+interface Point {
+  id: number;
+  name: string;
+  image: string;
+  latitude: number;
+  longitude: number;
+}
+
+interface RouteParams {
+  uf: string;
+  city: string;
+}
+
 const Points = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const routeParams = route.params as RouteParams;
   const [items, setItems] = useState<Item[]>([]);
+  const [nearPoints, setNearPoints] = useState<Point[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [initialPositon, setInitialPosition] = useState<[number, number]>([
+    0,
+    0,
+  ]);
+
   useEffect(() => {
-    api.get('items').then(response => {
-      setItems(response.data);
-    });
+    async function requestLocationPermission() {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Ecoleta necessita da sua permissão',
+            message:
+              'Ecoleta precisa da sua localização' +
+              'para encontrar os pontos de coleta mais próximos de você.',
+            buttonNeutral: 'Perguntar mais tarde',
+            buttonNegative: 'Cancelar',
+            buttonPositive: 'Autorizar',
+          },
+        );
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          Alert.alert(
+            'Ooops.. ',
+            'Precisamos de sua permissão para obter a localização dos pontos de coleta',
+          );
+          return;
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+    requestLocationPermission();
+  }, []);
+
+  useEffect(() => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const {coords} = position;
+        const {latitude, longitude} = coords;
+        setInitialPosition([latitude, longitude]);
+      },
+      error => Alert.alert('Error', JSON.stringify(error)),
+      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+    );
+  }, []);
+
+  useEffect(() => {
+    async function loadItems() {
+      api.get('items').then(response => {
+        setItems(response.data);
+      });
+    }
+    loadItems();
+  }, []);
+
+  useEffect(() => {
+    api
+      .get('points', {
+        params: {
+          city: 'Barreiro',
+          uf: 'MG',
+          items: [1, 2],
+        },
+      })
+      .then(response => {
+        setNearPoints(response.data.points);
+      });
   }, []);
 
   function handleSelectItem(id: number) {
@@ -50,6 +131,10 @@ const Points = () => {
     }
   }
 
+  function handleNavigateToDetails(id: number) {
+    navigation.navigate('Details', {point_id: id});
+  }
+
   return (
     <ContainerPrincipal>
       <Container>
@@ -62,32 +147,35 @@ const Points = () => {
         <Title>Bem vindo.</Title>
         <Description>Encontre no mapa um ponto de coleta</Description>
         <MapContainer>
-          <Map
-            initialRegion={{
-              latitude: 38.6560185,
-              longitude: -9.0633101,
-              latitudeDelta: 0.014,
-              longitudeDelta: 0.014,
-            }}>
-            <MapMarker
-              onPress={() => {
-                navigation.navigate('Details');
-              }}
-              coordinate={{
-                latitude: 38.6560185,
-                longitude: -9.0633101,
+          {initialPositon[0] !== 0 && (
+            <Map
+              loadingEnabled={initialPositon[0] === 0}
+              initialRegion={{
+                latitude: initialPositon[0],
+                longitude: initialPositon[1],
+                latitudeDelta: 0.014,
+                longitudeDelta: 0.014,
               }}>
-              <MapMarkerContainer>
-                <MapMarkerImage
-                  source={{
-                    uri:
-                      'https://images.unsplash.com/photo-1578916171728-46686eac8d58?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60',
-                  }}
-                />
-                <MapMarkerTitle>Mercado</MapMarkerTitle>
-              </MapMarkerContainer>
-            </MapMarker>
-          </Map>
+              {nearPoints.map(point => (
+                <MapMarker
+                  key={String(point.id)}
+                  onPress={() => handleNavigateToDetails(point.id)}
+                  coordinate={{
+                    latitude: point.latitude,
+                    longitude: point.longitude,
+                  }}>
+                  <MapMarkerContainer>
+                    <MapMarkerImage
+                      source={{
+                        uri: point.image,
+                      }}
+                    />
+                    <MapMarkerTitle>{point.name}</MapMarkerTitle>
+                  </MapMarkerContainer>
+                </MapMarker>
+              ))}
+            </Map>
+          )}
         </MapContainer>
       </Container>
       <ItemsContainer>
