@@ -1,6 +1,7 @@
 import styled from 'styled-components/native';
-import {ImageBackground, Text} from 'react-native';
-import {RectButton} from 'react-native-gesture-handler';
+import { ImageBackground, Text } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
+import { Image } from 'react-native';
 
 export const Container = styled(ImageBackground)`
   flex: 1;
@@ -8,7 +9,7 @@ export const Container = styled(ImageBackground)`
 `;
 
 export const Main = styled.View`
-  margin-top: 255px;
+  margin-top: 190px;
   flex: 1;
   justify-content: center;
 `;
@@ -18,13 +19,13 @@ export const Title = styled.Text`
   font-size: 32px;
   font-family: Ubuntu_700Bold;
   max-width: 260px;
-  margin-top: 64px;
+  margin-top: 8px;
 `;
 
 export const Description = styled.Text`
   color: #6c6c80;
   font-size: 16px;
-  margin-top: 16px;
+  margin-top: 8px;
   font-family: 'Roboto_400Regular';
   max-width: 260px;
   line-height: 24px;
@@ -68,4 +69,9 @@ export const ButtonText = styled(Text)`
   color: #fff;
   font-family: 'Roboto_500Medium';
   font-size: 20px;
+`;
+
+export const CustomImage = styled(Image)`
+  height: 40px;
+  margin-left: -10px;
 `;

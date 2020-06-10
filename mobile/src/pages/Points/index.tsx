@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {SvgUri} from 'react-native-svg';
-import {ScrollView, Alert, PermissionsAndroid} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { SvgUri } from 'react-native-svg';
+import { ScrollView, Alert, PermissionsAndroid } from 'react-native';
 import api from '../../services/api';
 import Geolocation from '@react-native-community/geolocation';
 
@@ -34,13 +34,14 @@ interface Point {
   id: number;
   name: string;
   image: string;
+  image_url: string;
   latitude: number;
   longitude: number;
 }
 
 interface RouteParams {
-  uf: string;
-  city: string;
+  selectedCity: string;
+  selectedUF: string;
 }
 
 const Points = () => {
@@ -49,7 +50,7 @@ const Points = () => {
   const routeParams = route.params as RouteParams;
   const [items, setItems] = useState<Item[]>([]);
   const [nearPoints, setNearPoints] = useState<Point[]>([]);
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [initialPositon, setInitialPosition] = useState<[number, number]>([
     0,
     0,
@@ -87,12 +88,12 @@ const Points = () => {
   useEffect(() => {
     Geolocation.getCurrentPosition(
       position => {
-        const {coords} = position;
-        const {latitude, longitude} = coords;
+        const { coords } = position;
+        const { latitude, longitude } = coords;
         setInitialPosition([latitude, longitude]);
       },
       error => Alert.alert('Error', JSON.stringify(error)),
-      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   }, []);
 
@@ -106,18 +107,20 @@ const Points = () => {
   }, []);
 
   useEffect(() => {
+    //console.log(routeParams, 'route params');
     api
       .get('points', {
         params: {
-          city: 'Barreiro',
-          uf: 'MG',
-          items: [1, 2],
+          city: routeParams.selectedCity,
+          uf: routeParams.selectedUF,
+          items: [selectedItems],
         },
       })
       .then(response => {
         setNearPoints(response.data.points);
+        //console.log(response.data.points, 'pointsfasdfasdf');
       });
-  }, []);
+  }, [selectedItems, routeParams.selectedCity, routeParams.selectedUF]);
 
   function handleSelectItem(id: number) {
     const alreadySelected = selectedItems.findIndex(item => item === id);
@@ -132,16 +135,17 @@ const Points = () => {
   }
 
   function handleNavigateToDetails(id: number) {
-    navigation.navigate('Details', {point_id: id});
+    navigation.navigate('Details', { point_id: id });
   }
-
+  console.log(nearPoints, 'NEARPOINTSSSSS');
   return (
     <ContainerPrincipal>
       <Container>
         <ContainerIcon
           onPress={() => {
             navigation.goBack();
-          }}>
+          }}
+        >
           <Icon name="arrow-left" size={20} color="#34cb79" />
         </ContainerIcon>
         <Title>Bem vindo.</Title>
@@ -155,25 +159,28 @@ const Points = () => {
                 longitude: initialPositon[1],
                 latitudeDelta: 0.014,
                 longitudeDelta: 0.014,
-              }}>
-              {nearPoints.map(point => (
-                <MapMarker
-                  key={String(point.id)}
-                  onPress={() => handleNavigateToDetails(point.id)}
-                  coordinate={{
-                    latitude: point.latitude,
-                    longitude: point.longitude,
-                  }}>
-                  <MapMarkerContainer>
-                    <MapMarkerImage
-                      source={{
-                        uri: point.image,
-                      }}
-                    />
-                    <MapMarkerTitle>{point.name}</MapMarkerTitle>
-                  </MapMarkerContainer>
-                </MapMarker>
-              ))}
+              }}
+            >
+              {nearPoints &&
+                nearPoints.map(point => (
+                  <MapMarker
+                    key={String(point.id)}
+                    onPress={() => handleNavigateToDetails(point.id)}
+                    coordinate={{
+                      latitude: point.latitude,
+                      longitude: point.longitude,
+                    }}
+                  >
+                    <MapMarkerContainer>
+                      <MapMarkerImage
+                        source={{
+                          uri: point.image_url,
+                        }}
+                      />
+                      <MapMarkerTitle>{point.name}</MapMarkerTitle>
+                    </MapMarkerContainer>
+                  </MapMarker>
+                ))}
             </Map>
           )}
         </MapContainer>
@@ -184,23 +191,26 @@ const Points = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: 20,
-          }}>
+          }}
+        >
           {items.map(item =>
             selectedItems.includes(item.id) ? (
               <SelectedItem>
                 <Item
-                  key={item.id}
+                  key={String(item.id)}
                   activeOpacity={0.6}
-                  onPress={() => handleSelectItem(item.id)}>
+                  onPress={() => handleSelectItem(item.id)}
+                >
                   <SvgUri width={42} height={42} uri={item.image_url} />
                   <ItemTitle>{item.title}</ItemTitle>
                 </Item>
               </SelectedItem>
             ) : (
               <Item
-                key={item.id}
+                key={String(item.id)}
                 activeOpacity={0.6}
-                onPress={() => handleSelectItem(item.id)}>
+                onPress={() => handleSelectItem(item.id)}
+              >
                 <SvgUri width={42} height={42} uri={item.image_url} />
                 <ItemTitle>{item.title}</ItemTitle>
               </Item>

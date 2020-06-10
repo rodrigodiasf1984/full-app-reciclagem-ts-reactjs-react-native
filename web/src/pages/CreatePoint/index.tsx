@@ -2,11 +2,12 @@ import React,{useEffect, useState, ChangeEvent, FormEvent} from 'react';
 import {Link, useHistory} from 'react-router-dom';
 import {FiArrowLeft} from 'react-icons/fi';
 import {Map, TileLayer, Marker} from 'react-leaflet';
-import {LeafletMouseEvent, latLng} from 'leaflet';
+import {LeafletMouseEvent} from 'leaflet';
 import logo from '../../assets/logo.svg';
 import api from '../../services/api';
 import axios from 'axios';
 import './styles.css';
+import Dropzone from '../../components/Dropzone';
 
 // Quando criar um estado para um object ou array é preciso informar o tipo, use interface
 
@@ -158,6 +159,7 @@ const CreatePoint = () => {
      </header>
      <form onSubmit={handleSubmit}>
        <h1>Cadastro do <br/> ponto de coleta </h1>
+        <Dropzone/>
        <fieldset>
           <legend>
             <h2>Dados</h2>
@@ -263,7 +265,7 @@ const CreatePoint = () => {
        </fieldset>
        <button type="submit">Cadastrar ponto de coleta</button>
      </form>
-   </div>
+   </div> 
   );
 }
 
