@@ -31,6 +31,7 @@ const CreatePoint = () => {
   const[cities, setCities]=useState<string[]>([]);
   const[selectedUF, setSelectedUF]=useState('0');
   const[selectedCity, setSelectedCity]=useState('0');
+  const[selectedFile, setSelectedFile]=useState<File>();
   const[selectedPosition, setSelectedPosition]=useState<[number, number]>([0, 0]);
   const[intialPosition, setInitialPosition]=useState<[number, number]>([0, 0]);
   const[selectedItems, setSelectedItems]=useState<number[]>([]);
@@ -63,7 +64,7 @@ const CreatePoint = () => {
   //busca os estados da api do IBGE
   useEffect(()=>{
     axios
-      .get<IBGEUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
+      .get<IBGEUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
       .then(response =>{
         const ufInitials=response.data.map(uf => uf.sigla); 
         setUfs(ufInitials);      
@@ -77,7 +78,7 @@ const CreatePoint = () => {
     }
     //carrega as cidades toda vezes que o utilizador escolher um estado
     axios
-      .get<IBGECityResponse[]>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUF}/municipios`)
+      .get<IBGECityResponse[]>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUF}/municipios?orderBy=nome`)
       .then(response =>{
        const cityNames = response.data.map(city => city.nome);
        setCities(cityNames);
@@ -127,16 +128,20 @@ const CreatePoint = () => {
     const [latitude, longitude] = selectedPosition;
     const items = selectedItems;
 
-    const data = {
-      name, 
-      email,
-      whatsapp,
-      uf,
-      city,
-      latitude, 
-      longitude,
-      items
-    }
+    const data  = new FormData();
+      data.append('name',name); 
+      data.append('email',email);
+      data.append('whatsapp',whatsapp);
+      data.append('uf',uf);
+      data.append('city',city);
+      data.append('latitude',String(latitude)); 
+      data.append('longitude',String(longitude));
+      data.append('items',items.join(','));
+      
+      if(selectedFile){
+        data.append('image', selectedFile);
+      }
+    
     const response = await api.post('points', data);
     console.log(response);
     if(response.status===200){
@@ -159,7 +164,7 @@ const CreatePoint = () => {
      </header>
      <form onSubmit={handleSubmit}>
        <h1>Cadastro do <br/> ponto de coleta </h1>
-        <Dropzone/>
+        <Dropzone onFileUploaded={setSelectedFile}/>
        <fieldset>
           <legend>
             <h2>Dados</h2>

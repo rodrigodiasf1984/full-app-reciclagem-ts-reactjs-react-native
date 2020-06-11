@@ -207,7 +207,7 @@ const Points = () => {
               </SelectedItem>
             ) : (
               <Item
-                key={String(item.id)}
+                key={item.id}
                 activeOpacity={0.6}
                 onPress={() => handleSelectItem(item.id)}
               >
