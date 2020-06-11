@@ -77,7 +77,7 @@ _Programas necessários:_
 - ⚛️ **React-native-comunity/geolocation** - É uma Biblioteca JavaScript para usar a geolocalização.
 - ⚛️ **React-native-maps** - É uma Biblioteca JavaScript para usar mapas.
 - ⚛️ **React-native-vector-icons** - É uma Biblioteca JavaScript para usar ícones.
-- ⚛️ **React-native-picker-select** - É uma Biblioteca JavaScript para usar emular o <select> no React-Native.
+- ⚛️ **React-native-picker-select** - É uma Biblioteca JavaScript para usar emular o select no React-Native.
 - 💅 **Styled Components** - É uma Biblioteca Javascript pra estilizar componentes.
 - 📄 **Axios** - É uma Biblioteca Javascript para fazer requisições http
 - 📄 **Axios** - É uma Biblioteca Javascript para fazer requisições http
@@ -90,9 +90,22 @@ _Programas necessários:_
 ## :camera: Demonstração
 
 <h1 align="center">
-  Em produção
- />
+  Em produção ;-) 
 </h1>
+
+<a id="como-contribuir"></a>
+
+## :recycle: Como contribuir
+
+- Faça um Fork desse repositório,
+- Crie uma branch com a sua feature: `git checkout -b my-feature`
+- Commit suas mudanças: `git commit -m 'feat: My new feature'`
+- Push a sua branch: `git push origin my-feature`
+
+## :mortar_board: Quem ministrou?
+
+As aulas foram ministradas pelo CTO da Rocketseat **[Diego Fernandes](https://github.com/diego3g)** nas aulas da **Next Level Week**.
+
 
 ## :memo: License
 
