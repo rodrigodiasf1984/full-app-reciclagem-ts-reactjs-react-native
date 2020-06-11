@@ -9,7 +9,7 @@
 
 ## :rocket: Sobre o desafio
 
-Criada um app para ajudar as pessoas a encontrarem pontos de coleta com **Node js**, **React JS**, **Reac-Native**.
+Criada um app para ajudar as pessoas a encontrarem pontos de coleta com **Node js**, **React JS**, **React-Native**.
 
 <h3 align="center">
   Funcionalidades do Frontend:
