@@ -7,6 +7,7 @@ node_modules
 uploads/*
 !uploads/.gitkeep
 *.sqlite
+.env
 
 
 # testing

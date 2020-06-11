@@ -5,6 +5,7 @@ import { SvgUri } from 'react-native-svg';
 import { ScrollView, Alert, PermissionsAndroid } from 'react-native';
 import api from '../../services/api';
 import Geolocation from '@react-native-community/geolocation';
+import Toast from '../../components/Toast';
 
 import {
   Container,
@@ -72,8 +73,11 @@ const Points = () => {
           },
         );
         if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          Alert.alert(
-            'Ooops.. ',
+          // Alert.alert(
+          //   'Ooops.. ',
+          //   'Precisamos de sua permissão para obter a localização dos pontos de coleta',
+          // );
+          Toast.error(
             'Precisamos de sua permissão para obter a localização dos pontos de coleta',
           );
           return;
@@ -118,7 +122,7 @@ const Points = () => {
       })
       .then(response => {
         setNearPoints(response.data.points);
-        //console.log(response.data.points, 'pointsfasdfasdf');
+        console.log(response.data.points, 'pointsfasdfasdf');
       });
   }, [selectedItems, routeParams.selectedCity, routeParams.selectedUF]);
 
@@ -137,7 +141,7 @@ const Points = () => {
   function handleNavigateToDetails(id: number) {
     navigation.navigate('Details', { point_id: id });
   }
-  console.log(nearPoints, 'NEARPOINTSSSSS');
+  //console.log(nearPoints, 'NEARPOINTSSSSS');
   return (
     <ContainerPrincipal>
       <Container>
