@@ -8,6 +8,7 @@ import api from '../../services/api';
 import axios from 'axios';
 import './styles.css';
 import Dropzone from '../../components/Dropzone';
+import { toast } from 'react-toastify';
 
 // Quando criar um estado para um object ou array é preciso informar o tipo, use interface
 
@@ -145,10 +146,10 @@ const CreatePoint = () => {
     const response = await api.post('points', data);
     console.log(response);
     if(response.status===200){
-      alert('Ponto de coleta adicionado com sucesso');
+      toast.success('Ponto de coleta adicionado com sucesso');
       history.push('/');
     }else{
-      alert('Erro ao adicionar o ponto de coleta, verifique os dados digitados');
+      toast.error('Erro ao adicionar o ponto de coleta, verifique os dados digitados');
     }
 
   }

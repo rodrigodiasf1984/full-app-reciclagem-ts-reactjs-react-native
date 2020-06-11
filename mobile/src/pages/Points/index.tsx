@@ -5,7 +5,7 @@ import { SvgUri } from 'react-native-svg';
 import { ScrollView, Alert, PermissionsAndroid } from 'react-native';
 import api from '../../services/api';
 import Geolocation from '@react-native-community/geolocation';
-import Toast from '../../components/Toast';
+import * as Toast from '../../components/Toast';
 
 import {
   Container,
@@ -78,7 +78,7 @@ const Points = () => {
           //   'Precisamos de sua permissão para obter a localização dos pontos de coleta',
           // );
           Toast.error(
-            'Precisamos de sua permissão para obter a localização dos pontos de coleta',
+            'Precisamos da sua permissão para obter a localização dos pontos de coleta',
           );
           return;
         }
@@ -117,12 +117,12 @@ const Points = () => {
         params: {
           city: routeParams.selectedCity,
           uf: routeParams.selectedUF,
-          items: [selectedItems],
+          items: selectedItems,
         },
       })
       .then(response => {
-        setNearPoints(response.data.points);
-        console.log(response.data.points, 'pointsfasdfasdf');
+        setNearPoints(response.data);
+        console.log(response.data, 'pointsfasdfasdf');
       });
   }, [selectedItems, routeParams.selectedCity, routeParams.selectedUF]);
 
@@ -178,7 +178,7 @@ const Points = () => {
                     <MapMarkerContainer>
                       <MapMarkerImage
                         source={{
-                          uri: point.image_url,
+                          uri: point.image,
                         }}
                       />
                       <MapMarkerTitle>{point.name}</MapMarkerTitle>
