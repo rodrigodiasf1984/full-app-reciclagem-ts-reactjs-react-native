@@ -65,10 +65,8 @@ _Programas necessários:_
 2. Abra o AVD Manager
 3. Inicie o emulador
 4. Abra o terminal na pasta `cd full-app-reciclagem-ts-reactjs-react-native/mobile` e execute:
-5. Instale todas as dependências com o comando `yarn`
-6. adb reverse tcp:9090 tcp:9090 (Reactotron)
-7. adb reverse tcp:3333 tcp:3333
-8. `react-native run-android` para instalar o app no emulador 
+5. Instale todas as dependências com o comando `npm install
+6. `react-native run-android` para instalar o app no emulador 
 
 ## :hammer: Ferramentas utilizadas
 
